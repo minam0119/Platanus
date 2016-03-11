@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Platanus</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_add_dialog">AddDialog</string>
+    <string name="title_activity_leaf_dialog">LeafDialog</string>
+    <string name="title_activity_option">OptionActivity</string>
+    <string name="title_activity_leaf_log">LeafLog</string>
+    <string name="title_activity_tree_log">TreeLog</string>
+    <string name="title_activity_leaf_list">LeafList</string>
+</resources>
