@@ -7,8 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.lifeistech.android.platanus.ItemLeafAdapter;
+import com.activeandroid.query.Select;
+import com.lifeistech.android.platanus.LeafAdapter;
+import com.lifeistech.android.platanus.Model.Leaf;
 import com.lifeistech.android.platanus.R;
+
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -27,8 +31,10 @@ public class LeafLogFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ListView listView = (ListView)view.findViewById(R.id.listView);
-        ItemLeafAdapter adapter = new ItemLeafAdapter(getActivity());
-
+        ListView listView = (ListView) view.findViewById(R.id.listView);
+        LeafAdapter adapter = new LeafAdapter(getActivity());
+        listView.setAdapter(adapter);
+        List<Leaf> leafList = new Select().from(Leaf.class).execute();
+        adapter.addAll(leafList);
     }
 }

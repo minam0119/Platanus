@@ -25,7 +25,7 @@
         android:orientation="vertical">
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"
@@ -36,12 +36,12 @@
             android:src="@drawable/cancel" />
 
         <ImageView
-            android:id="@+id/imageView5"
+            android:id="@+id/imageLeaf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/imageView4"
             android:layout_alignRight="@+id/imageView4"
-            android:layout_below="@+id/imageButton"
+            android:layout_below="@+id/cancelButton"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:scaleType="fitXY"

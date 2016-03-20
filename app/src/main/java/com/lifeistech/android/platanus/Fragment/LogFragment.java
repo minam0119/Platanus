@@ -1,13 +1,17 @@
 package com.lifeistech.android.platanus.Fragment;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.lifeistech.android.platanus.Activity.LeafLogActivity;
+import com.lifeistech.android.platanus.LeafAdapter;
 import com.lifeistech.android.platanus.R;
 
 import java.util.List;
@@ -36,5 +40,18 @@ public class LogFragment extends Fragment {
         listView.setAdapter(adapter);
         adapter.add("葉の記録");
         adapter.add("木の記録");
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) {
+                    Intent intent = new Intent(getActivity(), LeafLogActivity.class);
+                    startActivity(intent);
+                }
+                if (i == 1) {
+                    Intent intent = new Intent(getActivity(), LeafLogActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 }

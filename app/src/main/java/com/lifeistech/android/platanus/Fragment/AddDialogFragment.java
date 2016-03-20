@@ -3,6 +3,7 @@ package com.lifeistech.android.platanus.Fragment;
 import android.app.Dialog;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +23,6 @@ import java.util.Timer;
 public class AddDialogFragment extends DialogFragment {
     EditText nameText;
     Spinner tagSpinner, timeSpinner;
-
     //EditTextの中身と、ダイアログの選択肢をLeafClassの変数と関連付け、MainFragmentに値を受け渡す
 
     public AddDialogFragment() {
@@ -85,9 +85,12 @@ public class AddDialogFragment extends DialogFragment {
 
                 Log.d("name", leaf.name);
                 Log.d("tag", leaf.tag);
-
                 // 保存する処理
                 leaf.save();
+                Fragment fragment = getParentFragment();
+                if (fragment instanceof AddLeafDialogListener) {
+                    ((AddLeafDialogListener) fragment).onAdded(leaf);
+                }
                 dismiss();
             }
         });
@@ -96,5 +99,9 @@ public class AddDialogFragment extends DialogFragment {
         builder.setView(view);
         builder.setTitle("");
         return builder.create();
+    }
+
+    public interface AddLeafDialogListener {
+        public void onAdded(Leaf leaf);
     }
 }

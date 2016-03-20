@@ -3,6 +3,7 @@ package com.lifeistech.android.platanus.Model;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.lifeistech.android.platanus.R;
 
 import java.util.Date;
 import java.util.Timer;
@@ -22,14 +23,14 @@ public class Leaf extends Model {
     public int condition;
     @Column(name = "Time")
     public int time;
-    @Column(name  = "createdAt")
+    @Column(name = "CreatedAt")
     public long createdAt;
 
     public long getTime() {
         return time * 60 * 1000;
     }
 
-    public void updateCondition() {
+    public int updateCondition() {
         // 経過時間
         long leaveTime = new Date().getTime() - createdAt;
         long time = getTime();
@@ -44,18 +45,19 @@ public class Leaf extends Model {
             // 普通のやつ
             condition = 0;
         }
-        changeLeafImage();
+        return condition;
     }
 
-    public void changeLeafImage() {
-        if(condition == 0){
-            //画像を緑色にする
+    public int getConditionDrawable() {
+        switch (condition) {
+            case 0:
+                return R.drawable.leaf_b;
+            case 1:
+                return R.drawable.leaf_y;
+            case 2:
+                return R.drawable.leaf_g;
         }
-        if(condition == 1){
-            //画像を黄色にする
-        }
-        if(condition == 2){
-            //画像を枯葉にする
-        }
+        return R.drawable.leaf_g;
     }
+
 }
