@@ -129,7 +129,7 @@
             android:layout_below="@+id/layoutTime"
             android:layout_marginTop="16dp"
             android:background="@color/accent"
-            android:text="保存"
+            android:text="Make"
             android:textColor="#fff" />
     </LinearLayout>
 

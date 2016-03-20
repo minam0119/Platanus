@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.activeandroid.query.Select;
+import com.lifeistech.android.platanus.Activity.LeafLogActivity;
 import com.lifeistech.android.platanus.Activity.LogActivity;
 import com.lifeistech.android.platanus.Layout.TreeFrameLayout;
 import com.lifeistech.android.platanus.Model.Leaf;
@@ -136,7 +137,7 @@ public class MainFragment extends Fragment implements AddDialogFragment.AddLeafD
         btlog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), LogActivity.class);
+                Intent intent = new Intent(getActivity(), LeafLogActivity.class);
                 startActivity(intent);
             }
         });

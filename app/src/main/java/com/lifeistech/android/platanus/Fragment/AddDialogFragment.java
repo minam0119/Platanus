@@ -1,6 +1,8 @@
 package com.lifeistech.android.platanus.Fragment;
 
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +10,8 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -95,10 +99,19 @@ public class AddDialogFragment extends DialogFragment {
             }
         });
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view);
         builder.setTitle("");
-        return builder.create();
+        return builder.create();*/
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(view);
+        builder.setCancelable(true);
+        final Dialog dialog = builder.create();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        return dialog;
     }
 
     public interface AddLeafDialogListener {

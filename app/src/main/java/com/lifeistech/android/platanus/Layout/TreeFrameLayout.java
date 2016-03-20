@@ -189,10 +189,6 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         }
     }
 
-    public List<ImageView> getLeafImages(){
-        return leafImages;
-    }
-
     public interface LeafClickListener {
         public void onLeafClick(Leaf leaf);
     }

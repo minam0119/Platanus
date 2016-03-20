@@ -1,5 +1,8 @@
 package com.lifeistech.android.platanus.Model;
 
+import android.media.Image;
+import android.widget.ImageView;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -25,6 +28,8 @@ public class Leaf extends Model {
     public int time;
     @Column(name = "CreatedAt")
     public long createdAt;
+    @Column(name = "ImageView")
+    public ImageView imageView;
 
     public long getTime() {
         return time * 60 * 1000;

@@ -1,17 +1,21 @@
 package com.lifeistech.android.platanus;
 
 import android.content.Context;
+import android.media.Image;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lifeistech.android.platanus.Model.Leaf;
 
 import junit.framework.TestCase;
+
+import java.util.List;
 
 /**
  * Created by MINAMI on 16/02/28.
@@ -32,6 +36,9 @@ public class LeafAdapter extends ArrayAdapter<Leaf> {
         TextView nameTextView = (TextView) convertView.findViewById(R.id.nameTextView);
         TextView tagTextView = (TextView) convertView.findViewById(R.id.tagTextView);
         TextView timeTextView = (TextView) convertView.findViewById(R.id.timeTextView);
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
+        //imageView.setImageResource(item.);
+
 
 
 

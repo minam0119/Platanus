@@ -68,7 +68,9 @@
                 android:id="@+id/nameText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/base" />
+                android:background="@color/base"
+                android:textColor="@color/accent"
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -92,7 +94,9 @@
                 android:id="@+id/tagText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/base" />
+                android:background="@color/base"
+                android:textColor="@color/accent"
+                android:gravity="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -115,7 +119,9 @@
                 android:id="@+id/timeText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/base" />
+                android:background="@color/base"
+                android:textColor="@color/accent"
+                android:gravity="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -133,7 +139,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
                 android:background="@color/sub"
-                android:text="New Button"
+                android:text="Done"
                 android:textColor="#fff" />
 
             <Button
@@ -145,7 +151,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
                 android:background="@color/accent"
-                android:text="New Button"
+                android:text="Give Up"
                 android:textColor="#fff" />
         </LinearLayout>
 

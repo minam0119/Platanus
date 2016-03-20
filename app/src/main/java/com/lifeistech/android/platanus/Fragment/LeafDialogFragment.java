@@ -75,7 +75,8 @@ public class LeafDialogFragment extends DialogFragment {
                                 // コンディションによって処理変えて
                                 long leaveTime = new Date().getTime() - leaf.createdAt;
 
-                                long time = leaf.getTime();
+                                long time = leaf.getTime() / (60 * 1000);
+
                                 int minute = (int) (time - leaveTime) / (60 * 1000);
                                 int second = (int) (time - leaveTime) % (60 * 1000) / 1000;
                                 timeText.setText(minute + "分" + second + "秒");
