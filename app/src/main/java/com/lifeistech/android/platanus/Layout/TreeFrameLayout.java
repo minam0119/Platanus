@@ -2,7 +2,9 @@ package com.lifeistech.android.platanus.Layout;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Handler;
 import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import com.lifeistech.android.platanus.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -23,6 +27,7 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
     private static final int LEVEL1 = 2;
     private static final int LEVEL2 = 5;
     private static final int LEVEL3 = 10;
+    private static final int LEVEL4 = 15;
 
     private final Point TreeImageSize = new Point(451, 474);
     private final Point LeafImageSize = new Point(34, 34);
@@ -76,10 +81,13 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
     };
 
     private int level;
-    private int leafCount;
+    private String selectTag;
     private ImageView treeImageView;
+    private Timer timer;
+    private Handler handler = new Handler();
     private List<ImageView> leafImages = new ArrayList<>();
-    private LeafClickListener leafClickListener;
+    private LeafFrameLayoutListener leafFrameLayoutListener;
+    public int treeCount = 1;
 
     public TreeFrameLayout(Context context) {
         this(context, null);
@@ -94,25 +102,54 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         init();
     }
 
+
     private void init() {
-        // TreeImageView
-        treeImageView = new ImageView(getContext());
-        treeImageView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        addView(treeImageView);
         // Level
-        leafCount = new Select().from(Leaf.class).count();
-        level = getLevel(leafCount);
+        level = getLevel();
         updateLevels();
         addAllLeafs();
     }
 
-    public void addLeaf(Leaf leaf) {
-        leafImages.size();
-        leafCount++;
-        int updateLevel = getLevel(leafCount);
-        if (updateLevel != level) {
-            level = updateLevel;
-            updateLevels();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLeafConditions();
+                    }
+                });
+            }
+        }, 500, 1000);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    public void addLeaf(Leaf leaf, boolean isLater) {
+        // 後から追加する時
+        if (isLater) {
+            int updateLevel = getLevel();
+            if (updateLevel != level) {
+                if (updateLevel == 1) {
+                    treeCount ++;
+                    leafFrameLayoutListener.onTreeAdded(treeCount, updateLevel);
+                }
+                level = updateLevel;
+                updateLevels();
+                addAllLeafs();
+                return;
+            }
         }
         int size = leafImages.size();
         final Point point;
@@ -132,9 +169,16 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
                 break;
         }
         final ImageView imageView = new ImageView(getContext());
-        imageView.setImageResource(R.drawable.leaf_g);
+        leaf.updateCondition();
+        imageView.setImageResource(leaf.getConditionDrawable());
         imageView.setTag(leaf);
         leafImages.add(imageView);
+        // タグが選択されていないか、タグが一緒の時
+        if (TextUtils.isEmpty(selectTag) || selectTag.equals(leaf.tag)) {
+            imageView.setAlpha(1.0f);
+        } else {
+            imageView.setAlpha(0.4f);
+        }
         addView(imageView, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         imageView.post(new Runnable() {
             @Override
@@ -148,24 +192,29 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         imageView.setOnClickListener(this);
     }
 
+    // 木のレベルをあげる処理
     protected void updateLevels() {
-        treeImageView.setImageResource(TreeImages[level-1]);
+        removeAllViews();
+        // TreeImageView
+        treeImageView = new ImageView(getContext());
+        treeImageView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        treeImageView.setImageResource(TreeImages[level - 1]);
+        addView(treeImageView);
         leafImages.clear();
     }
 
     private void addAllLeafs() {
         final List<Leaf> leafs = new Select().from(Leaf.class).execute();
         for (Leaf leaf : leafs) {
-            addLeaf(leaf);
+            addLeaf(leaf, false);
         }
     }
 
     public int getLevel() {
-        return level;
-    }
-
-    public int getLevel(int count) {
-        if (count > LEVEL3) {
+        final int count = new Select().from(Leaf.class).count() % LEVEL4;
+        if (count > LEVEL4) {
+            return 1;
+        } else if (count > LEVEL3) {
             return 4;
         } else if (count > LEVEL2) {
             return 3;
@@ -175,21 +224,56 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         return 1;
     }
 
-    public void setOnLeafClickListener(LeafClickListener leafClickListener) {
-        this.leafClickListener = leafClickListener;
+    public void selectTag(String tag) {
+        selectTag = tag;
+        for (ImageView imageView : leafImages) {
+            Leaf leaf = (Leaf) imageView.getTag();
+            if (tag.equals(leaf.tag)) {
+                imageView.setAlpha(1.0f);
+            } else {
+                imageView.setAlpha(0.4f);
+            }
+        }
+    }
+
+    public void clearSelectTag() {
+        for (ImageView imageView : leafImages) {
+            imageView.setAlpha(1.0f);
+        }
+    }
+
+    public void updateLeafConditions() {
+        for (ImageView imageView : leafImages) {
+            Leaf leaf = (Leaf) imageView.getTag();
+            imageView.setImageResource(leaf.getConditionDrawable());
+        }
+    }
+
+    public void setOnLeafClickListener(LeafFrameLayoutListener leafFrameLayoutListener) {
+        this.leafFrameLayoutListener = leafFrameLayoutListener;
     }
 
     @Override
     public void onClick(View view) {
         if (view instanceof ImageView) {
             Leaf leaf = (Leaf) view.getTag();
-            if (leafClickListener != null) {
-                leafClickListener.onLeafClick(leaf);
+            if (leafFrameLayoutListener != null) {
+                leafFrameLayoutListener.onLeafClick(leaf);
             }
         }
     }
 
-    public interface LeafClickListener {
-        public void onLeafClick(Leaf leaf);
+    //更新したい情報を入れる
+    //木の数と
+    public interface LeafFrameLayoutListener {
+        void onLeafClick(Leaf leaf);
+
+        void onTreeAdded(int treeCount, int level);
+
+        void onChangeCondition(int condition);
+    }
+
+    public int getTreeCount() {
+        return treeCount;
     }
 }

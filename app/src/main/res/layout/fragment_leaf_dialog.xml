@@ -38,13 +38,13 @@
         <ImageView
             android:id="@+id/imageLeaf"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="108dp"
             android:layout_alignLeft="@+id/imageView4"
             android:layout_alignRight="@+id/imageView4"
             android:layout_below="@+id/cancelButton"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
-            android:scaleType="fitXY"
+            android:scaleType="fitCenter"
             android:src="@drawable/image" />
 
         <LinearLayout
@@ -132,25 +132,25 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/buttonNegative"
+                android:id="@+id/buttonPositive"
                 android:layout_width="73dp"
                 android:layout_height="48dp"
                 android:layout_alignLeft="@+id/imageView5"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/sub"
+                android:background="@drawable/donebutton"
                 android:text="Done"
                 android:textColor="#fff" />
 
             <Button
-                android:id="@+id/buttonPositive"
+                android:id="@+id/buttonNegative"
                 android:layout_width="73dp"
                 android:layout_height="48dp"
                 android:layout_alignRight="@+id/imageView5"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/accent"
+                android:background="@drawable/giveupbutton"
                 android:text="Give Up"
                 android:textColor="#fff" />
         </LinearLayout>

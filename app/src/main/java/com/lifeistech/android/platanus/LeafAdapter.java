@@ -15,6 +15,7 @@ import com.lifeistech.android.platanus.Model.Leaf;
 
 import junit.framework.TestCase;
 
+import java.awt.font.TextAttribute;
 import java.util.List;
 
 /**
@@ -37,11 +38,9 @@ public class LeafAdapter extends ArrayAdapter<Leaf> {
         TextView tagTextView = (TextView) convertView.findViewById(R.id.tagTextView);
         TextView timeTextView = (TextView) convertView.findViewById(R.id.timeTextView);
         ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
-        //imageView.setImageResource(item.);
 
 
-
-
+        imageView.setImageResource(item.getConditionDrawable());
         nameTextView.setText(item.name);
         tagTextView.setText(item.tag);
         timeTextView.setText(String.valueOf(item.time));

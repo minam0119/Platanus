@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_hovered="true">
+        <bitmap android:src="@drawable/icon_log" android:alpha="0.5" />
+    </item>
+    <item android:state_pressed="true">
+        <bitmap android:src="@drawable/icon_log" android:tint="#3000" android:tintMode="src_over" />
+    </item>
+    <item android:state_pressed="false" android:drawable="@drawable/icon_log" />
+</selector>

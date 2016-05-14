@@ -44,8 +44,6 @@ public class TreeAdapter extends ArrayAdapter<Leaf> {
         levelTextView.setText(level);
 
 
-
-
         return convertView;
     }
 }

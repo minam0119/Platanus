@@ -17,8 +17,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.lifeistech.android.platanus.Model.Leaf;
+import com.lifeistech.android.platanus.Model.Tags;
 import com.lifeistech.android.platanus.R;
 
+import java.util.Date;
 import java.util.Timer;
 
 /**
@@ -42,17 +44,7 @@ public class AddDialogFragment extends DialogFragment {
         timeSpinner = (Spinner) view.findViewById(R.id.timeSpinner);
 
         final ArrayAdapter<String> tagSpinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
-        tagSpinnerAdapter.add("なし");
-        tagSpinnerAdapter.add("数学");
-        tagSpinnerAdapter.add("国語");
-        tagSpinnerAdapter.add("英語");
-        tagSpinnerAdapter.add("社会");
-        tagSpinnerAdapter.add("理科");
-        tagSpinnerAdapter.add("課題");
-        tagSpinnerAdapter.add("習い事");
-        tagSpinnerAdapter.add("開発");
-        tagSpinnerAdapter.add("運動");
-        tagSpinnerAdapter.add("その他");
+        tagSpinnerAdapter.addAll(Tags.Items);
         tagSpinner.setAdapter(tagSpinnerAdapter);
 
         final ArrayAdapter<String> timeSpinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
@@ -73,6 +65,7 @@ public class AddDialogFragment extends DialogFragment {
         view.findViewById(R.id.buttonPositive).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(AddDialogFragment.class.getSimpleName(), "buttonPositive");
                 // 濃緑のボタンを押した時
                 // TODO 保存処理
                 Leaf leaf = new Leaf();
@@ -87,8 +80,7 @@ public class AddDialogFragment extends DialogFragment {
                 }
                 leaf.condition = 0;
 
-                Log.d("name", leaf.name);
-                Log.d("tag", leaf.tag);
+                leaf.createdAt = new Date().getTime();
                 // 保存する処理
                 leaf.save();
                 Fragment fragment = getParentFragment();
@@ -115,6 +107,6 @@ public class AddDialogFragment extends DialogFragment {
     }
 
     public interface AddLeafDialogListener {
-        public void onAdded(Leaf leaf);
+        void onAdded(Leaf leaf);
     }
 }

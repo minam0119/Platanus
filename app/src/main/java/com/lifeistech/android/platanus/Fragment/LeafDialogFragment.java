@@ -2,22 +2,18 @@ package com.lifeistech.android.platanus.Fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.Editable;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +35,7 @@ public class LeafDialogFragment extends DialogFragment {
     ImageView leafImage;
     TextView nameText, tagText, timeText;
     private Handler handler = new Handler();
+    public Timer timer = new Timer();
 
     public static LeafDialogFragment createInstance(Leaf leaf) {
         LeafDialogFragment fragment = new LeafDialogFragment();
@@ -65,59 +62,62 @@ public class LeafDialogFragment extends DialogFragment {
             if (leaf != null) {
                 nameText.setText(leaf.name);
                 tagText.setText(leaf.tag);
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // コンディションによって処理変えて
-                                long leaveTime = new Date().getTime() - leaf.createdAt;
-
-                                long time = leaf.getTime() / (60 * 1000);
-
-                                int minute = (int) (time - leaveTime) / (60 * 1000);
-                                int second = (int) (time - leaveTime) % (60 * 1000) / 1000;
-                                timeText.setText(minute + "分" + second + "秒");
-                                leafImage.setImageResource(leaf.getConditionDrawable());
-                            }
-                        });
-                    }
-                }, 500, 1000);
+                if (leaf.isDone()) {
+                    long doneAtTime = leaf.getLeaveTime(); // 終了時間 [ms]
+                    long time = leaf.getTime(); // 制限時間 [ms]
+                    setLeafTime(doneAtTime, time);
+                    leaf.getCondition();
+                } else {
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    long leaveTime = leaf.getLeaveTime(); // 経過時間 [ms]
+                                    long time = leaf.getTime(); // 制限時間 [ms]
+                                    setLeafTime(leaveTime, time);
+                                }
+                            });
+                        }
+                    }, 500, 1000);
+                }
             }
         }
 
         view.findViewById(R.id.buttonNegative).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                timer.cancel();
+                // ギブアップなので完了時間を最大にする
+                leaf.doneAt = Long.MAX_VALUE;
+                leaf.updateCondition();
+                Log.d("コンディション:",String.valueOf(leaf.condition));
+                // 作ったリスナーを呼び出す
+                Fragment fragment = getParentFragment();
+                if (fragment instanceof LeafDialogListener) {
+                    ((LeafDialogListener) fragment).onClickGiveUp();
+                    Log.d("onClickGiveUp()","が呼び出されたかも");
+                }
+                leaf.save();
+                dismiss();
             }
         });
 
         view.findViewById(R.id.buttonPositive).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("このToDoを中断しますか?" + "\n" + "※葉は枯葉となります。");
-                builder.show();
-                builder.setPositiveButton("はい", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //タイマーを0にする
-                        //葉を枯れ葉にする
-                        dismiss();
-                    }
-                });
-                builder.setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dismiss();
-                    }
-                });*/
+                timer.cancel();
+                // DONE
+                leaf.doneAt = new Date().getTime();
+                leaf.save();
+                Fragment fragment = getParentFragment();
+                if (fragment instanceof LeafDialogListener) {
+                    ((LeafDialogListener) fragment).onClickDone();
+                }
+                dismiss();
             }
         });
-
         view.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,6 +132,29 @@ public class LeafDialogFragment extends DialogFragment {
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         return dialog;
+    }
+
+    private void setLeafTime(long leaveTime, long time) {
+        int minute; // [min.]
+        int second;
+        if (leaveTime >= time) {
+            minute = 0;
+            second = 0;
+            timer.cancel();
+        } else {
+            minute = (int) (time - leaveTime) / (60 * 1000); // [min.]
+            second = (int) (time - leaveTime) % (60 * 1000) / 1000;
+        }
+        timeText.setText(minute + "分" + second + "秒");
+        leafImage.setImageResource(leaf.getConditionDrawable());
+    }
+
+    // リスナー用のインターフェースを用意する
+    public interface LeafDialogListener {
+        // メソッドを用意する
+        public void onClickDone();
+
+        public void onClickGiveUp();
     }
 
 }

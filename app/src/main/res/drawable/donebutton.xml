@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" >
+        <shape android:tint="#3000" android:tintMode="src_over" android:shape="rectangle">
+            <solid android:color="@color/sub"/>
+        </shape>
+    </item>
+    <item android:state_pressed="false" >
+        <color android:color="@color/sub"></color>
+    </item>
+</selector>
