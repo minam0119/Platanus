@@ -264,7 +264,6 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
     }
 
     //更新したい情報を入れる
-    //木の数と
     public interface LeafFrameLayoutListener {
         void onLeafClick(Leaf leaf);
 
