@@ -98,13 +98,15 @@ public class MainFragment extends Fragment implements
     }
 
     @Override
-    public void onClickDone() {
+    public void onClickDone(Leaf leaf) {
+        treeLayout.updateLeaf(leaf);
         treeLayout.updateLeafConditions();
     }
 
     @Override
-    public void onClickGiveUp() {
+    public void onClickGiveUp(Leaf leaf) {
         // Leafをセットする
+        treeLayout.updateLeaf(leaf);
         treeLayout.updateLeafConditions();
     }
 

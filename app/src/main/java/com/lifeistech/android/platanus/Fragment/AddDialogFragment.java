@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.lifeistech.android.platanus.Model.Leaf;
 import com.lifeistech.android.platanus.Model.Tags;
@@ -68,11 +70,17 @@ public class AddDialogFragment extends DialogFragment {
                 Log.d(AddDialogFragment.class.getSimpleName(), "buttonPositive");
                 // 濃緑のボタンを押した時
                 // TODO 保存処理
+                String name = nameText.getText().toString();
+                if (TextUtils.isEmpty(name)) {
+                    Toast.makeText(getContext(),"名前を入力してください",Toast.LENGTH_LONG).show();
+                    return;
+                }
                 Leaf leaf = new Leaf();
-                leaf.name = nameText.getText().toString();
+                leaf.name = name;
                 leaf.tag = (String) tagSpinner.getSelectedItem();
                 int time = Integer.valueOf((String) timeSpinner.getSelectedItem());
                 leaf.time = time;
+                //leaf.time = 1;
                 if (time >= 120) {
                     leaf.type = 0;
                 } else {

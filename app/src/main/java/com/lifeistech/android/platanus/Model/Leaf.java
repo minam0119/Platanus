@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.widget.ImageView;
 
 import com.activeandroid.Model;
@@ -24,9 +27,6 @@ import java.util.Date;
 @Table(name = "Leafs")
 public class Leaf extends Model {
     //public static final int CO
-
-    private Activity mainActivity;
-
     @Column(name = "Name")
     public String name;
     @Column(name = "Tag")
@@ -34,7 +34,7 @@ public class Leaf extends Model {
     @Column(name = "Type")  // type 0=flower 1=leaf
     public int type;
     @Column(name = "Condition") // condition 0=good 1=danger 2=bad
-    public int condition;
+    public int condition = -1;
     @Column(name = "Time")
     public int time;
     @Column(name = "CreatedAt")
@@ -69,7 +69,6 @@ public class Leaf extends Model {
         } else if (leaveTime >= yellowTime) {
             // 黄色
             condition = 1;
-            getNotification();
         } else {
             // 普通のやつ
             condition = 0;
@@ -77,7 +76,7 @@ public class Leaf extends Model {
         return condition;
     }
 
-    public int getCondition () {
+    public int getCondition() {
         updateCondition();
         return condition;
     }
@@ -95,17 +94,31 @@ public class Leaf extends Model {
         return R.drawable.leaf_g;
     }
 
-    public void getNotification () {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder
-                (MyApplication.getInstance().getApplicationContext());
-        Intent intent = new Intent(MyApplication.getInstance().getApplicationContext(), MainActivity.class);
+    public Notification getNotification(Context context) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mainActivity,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setTicker(name + "の葉が黄色くなりました");
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        String text;
+        switch (condition) {
+            case 0:
+                return null;
+            case 1:
+                text = name + "の葉が黄色くなりました";
+                break;
+            case 2:
+                text = name + "の葉が枯れました";
+                break;
+            default:
+                return null;
+        }
+        builder.setTicker(text);
         builder.setContentTitle("プラタナス");
-        builder.setContentText(name + "の葉が黄色くなりました");
+        builder.setContentText(text);
         builder.setAutoCancel(true);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentIntent(pendingIntent);
+        return builder.build();
     }
 
 }

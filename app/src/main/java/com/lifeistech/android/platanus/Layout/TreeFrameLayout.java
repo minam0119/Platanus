@@ -1,15 +1,20 @@
 package com.lifeistech.android.platanus.Layout;
 
+import android.app.Notification;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Handler;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.lifeistech.android.platanus.Model.Leaf;
@@ -141,11 +146,32 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         if (isLater) {
             int updateLevel = getLevel();
             if (updateLevel != level) {
-                if (updateLevel == 1) {
-                    treeCount ++;
-                    leafFrameLayoutListener.onTreeAdded(treeCount, updateLevel);
+                // 起動した後にレベルが上がる
+                boolean isFinished = true;
+                for (ImageView imageView : leafImages) {
+                    Leaf l = (Leaf) imageView.getTag();
+                    if (!l.isDone() && l.getCondition() != 2) {
+                        Log.d(TreeFrameLayout.class.getSimpleName(), "condition:" + leaf.condition);
+                        isFinished = false;
+                        break;
+                    }
                 }
+                if (!isFinished) {
+                    List<Leaf> lastLeaf = new Select().from(Leaf.class).orderBy("CreatedAt DESC").limit(1).execute();
+                    if (lastLeaf != null && !lastLeaf.isEmpty()) {
+                        lastLeaf.get(0).delete();
+                    }
+                    Toast.makeText(getContext(), "タスクが全て終了していましせん", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                leafFrameLayoutListener.onTreeAdded(treeCount, updateLevel);
                 level = updateLevel;
+                // レベルを1にして, 木を新しく追加する
+                if (updateLevel == 1) {
+                    removeAllLeaf();
+                    treeCount++;
+                }
                 updateLevels();
                 addAllLeafs();
                 return;
@@ -169,7 +195,6 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
                 break;
         }
         final ImageView imageView = new ImageView(getContext());
-        leaf.updateCondition();
         imageView.setImageResource(leaf.getConditionDrawable());
         imageView.setTag(leaf);
         leafImages.add(imageView);
@@ -179,12 +204,16 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         } else {
             imageView.setAlpha(0.4f);
         }
-        addView(imageView, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setAdjustViewBounds(true);
+        addView(imageView, new LayoutParams(getResources().getDimensionPixelSize(R.dimen.leaf_width), ViewGroup.LayoutParams.WRAP_CONTENT));
         imageView.post(new Runnable() {
             @Override
             public void run() {
-                final int x = (getWidth() / TreeImageSize.x) * point.x - imageView.getWidth();
-                final int y = (getHeight() / TreeImageSize.y) * point.y - imageView.getHeight();
+                final int x = (int) (((float) getWidth() / TreeImageSize.x) * point.x) - imageView.getWidth();
+                final int y = (int) (((float) getHeight() / TreeImageSize.y) * point.y) - imageView.getHeight();
+                Log.d(TreeFrameLayout.class.getSimpleName(), "layout size width:" + getWidth() + ", height:" + getHeight());
+                Log.d(TreeFrameLayout.class.getSimpleName(), "translate image x:" + x + ", y:" + y);
                 ViewCompat.setTranslationX(imageView, x);
                 ViewCompat.setTranslationY(imageView, y);
             }
@@ -197,7 +226,10 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         removeAllViews();
         // TreeImageView
         treeImageView = new ImageView(getContext());
-        treeImageView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        treeImageView.setLayoutParams(new LayoutParams(getResources().getDimensionPixelSize(R.dimen.tree_width),
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        treeImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        treeImageView.setAdjustViewBounds(true);
         treeImageView.setImageResource(TreeImages[level - 1]);
         addView(treeImageView);
         leafImages.clear();
@@ -207,6 +239,13 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
         final List<Leaf> leafs = new Select().from(Leaf.class).execute();
         for (Leaf leaf : leafs) {
             addLeaf(leaf, false);
+        }
+    }
+
+    public void removeAllLeaf() {
+        final List<Leaf> leafs = new Select().from(Leaf.class).orderBy("CreatedAt DESC").execute();
+        for (int i = 1; i < leafs.size(); i++) {
+            leafs.get(i).delete();
         }
     }
 
@@ -245,12 +284,32 @@ public class TreeFrameLayout extends FrameLayout implements View.OnClickListener
     public void updateLeafConditions() {
         for (ImageView imageView : leafImages) {
             Leaf leaf = (Leaf) imageView.getTag();
+            final int lastCondition = leaf.condition;
+            final int condition = leaf.updateCondition();
+            if (lastCondition != -1 && lastCondition != condition) {
+                final NotificationManagerCompat manager = NotificationManagerCompat.from(getContext());
+                final Notification notification = leaf.getNotification(getContext());
+                if (notification != null) {
+                    // 通知を送る部分
+                    manager.notify(0, notification);
+                }
+            }
             imageView.setImageResource(leaf.getConditionDrawable());
         }
     }
 
     public void setOnLeafClickListener(LeafFrameLayoutListener leafFrameLayoutListener) {
         this.leafFrameLayoutListener = leafFrameLayoutListener;
+    }
+
+    public void updateLeaf(Leaf leaf) {
+        for (ImageView leafImage : leafImages) {
+            Leaf l = (Leaf) leafImage.getTag();
+            if (l.getId().equals(leaf.getId())) {
+                leafImage.setTag(leaf);
+                return;
+            }
+        }
     }
 
     @Override

@@ -96,7 +96,7 @@ public class LeafDialogFragment extends DialogFragment {
                 // 作ったリスナーを呼び出す
                 Fragment fragment = getParentFragment();
                 if (fragment instanceof LeafDialogListener) {
-                    ((LeafDialogListener) fragment).onClickGiveUp();
+                    ((LeafDialogListener) fragment).onClickGiveUp(leaf);
                     Log.d("onClickGiveUp()","が呼び出されたかも");
                 }
                 leaf.save();
@@ -113,7 +113,7 @@ public class LeafDialogFragment extends DialogFragment {
                 leaf.save();
                 Fragment fragment = getParentFragment();
                 if (fragment instanceof LeafDialogListener) {
-                    ((LeafDialogListener) fragment).onClickDone();
+                    ((LeafDialogListener) fragment).onClickDone(leaf);
                 }
                 dismiss();
             }
@@ -152,9 +152,9 @@ public class LeafDialogFragment extends DialogFragment {
     // リスナー用のインターフェースを用意する
     public interface LeafDialogListener {
         // メソッドを用意する
-        public void onClickDone();
+        void onClickDone(Leaf leaf);
 
-        public void onClickGiveUp();
+        void onClickGiveUp(Leaf leaf);
     }
 
 }
