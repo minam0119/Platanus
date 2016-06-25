@@ -12,11 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.activeandroid.query.Select;
 import com.lifeistech.android.platanus.Activity.LeafLogActivity;
 import com.lifeistech.android.platanus.Layout.TreeFrameLayout;
 import com.lifeistech.android.platanus.Model.Leaf;
 import com.lifeistech.android.platanus.Model.Tags;
+import com.lifeistech.android.platanus.Model.Tree;
 import com.lifeistech.android.platanus.R;
+
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -121,14 +125,16 @@ public class MainFragment extends Fragment implements
     }
 
     @Override
-    public void onTreeAdded(int leafCount, int level) {
-        level = treeLayout.getLevel();
-        levelTextView.setText(String.valueOf(level));
-        countTextView.setText(String.valueOf(leafCount));
+    public void onTreeAdded(Tree tree) {
+        levelTextView.setText(String.valueOf(tree.level));
+        countTextView.setText(String.valueOf(tree.count));
+        Log.d("level",String.valueOf(tree.level));
     }
 
     @Override
-    public void onChangeCondition(int condition) {
-
+    public void onChangeCondition(Tree tree) {
+        levelTextView.setText(String.valueOf(tree.level));
+        countTextView.setText(String.valueOf(tree.count));
+        Log.d("level",String.valueOf(tree.level));
     }
 }
