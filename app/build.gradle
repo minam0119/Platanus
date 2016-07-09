@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.0"
 
     defaultConfig {
-        applicationId "com.lifeistech.android.platanus"
+        applicationId "com.minami.android.platanus"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

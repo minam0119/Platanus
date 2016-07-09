@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lifeistech.android.platanus.Fragment.AddDialogFragment">
+    tools:context="com.minami.android.platanus.Fragment.AddDialogFragment">
 
     <ImageView
         android:id="@+id/imageView4"
